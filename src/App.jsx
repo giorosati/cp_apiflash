@@ -7,6 +7,7 @@ function App() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [banList, setBanList] = useState({})
+  const [history, setHistory] = useState([])
 
   async function handleFetch() {
     setLoading(true)
@@ -15,6 +16,7 @@ function App() {
       const maxAttempts = 8
       const res = await fetchRandomDog({ maxAttempts, banList })
       setDog(res)
+      setHistory(prev => [res, ...prev].slice(0, 50))
     } catch (err) {
       const msg = err && err.message ? err.message : String(err)
       if (msg.toLowerCase().includes('no non-banned')) {
@@ -38,6 +40,13 @@ function App() {
     }
   }, [])
 
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('history')
+      if (raw) setHistory(JSON.parse(raw))
+    } catch (e) {}
+  }, [])
+
   // persist ban list
   useEffect(() => {
     try {
@@ -46,6 +55,12 @@ function App() {
       // ignore
     }
   }, [banList])
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('history', JSON.stringify(history))
+    } catch (e) {}
+  }, [history])
 
   function addBan(key, value) {
     if (!key || value == null) return
@@ -69,18 +84,37 @@ function App() {
     })
   }
 
+  function loadFromHistory(item) {
+    if (!item) return
+    setDog(item)
+  }
+
   return (
     <div className="app-container">
       <header>
         <h1>Man's Best Friend</h1>
       </header>
 
-      <main>
-        <div className="content-area">
-          <button onClick={handleFetch} disabled={loading}>
-            {loading ? 'Fetching…' : 'Fetch Dog'}
-          </button>
+      <div className="fetch-wrapper">
+        <button onClick={handleFetch} disabled={loading}>
+          {loading ? 'Fetching…' : 'Fetch Dog'}
+        </button>
+      </div>
 
+      <main>
+        <aside className="history-column" aria-label="History">
+          <div className="history-list">
+            {history.length === 0 && <div className="history-empty">No history</div>}
+            {history.map((h, i) => (
+              <button key={h.id || i} className="history-item" onClick={() => loadFromHistory(h)}>
+                <img src={h.imageUrl} alt={h.attributes.breed} />
+                <div className="history-breed">{h.attributes.breed}</div>
+              </button>
+            ))}
+          </div>
+        </aside>
+
+        <div className="content-area">
           {error && <div className="error">Error: {error}</div>}
 
           {dog && (

@@ -56,9 +56,49 @@ main {
   align-items: center;
 }
 
+/* History column */
+.history-column { display:none }
+.history-list { display:flex; flex-direction:column; gap:0.5rem; padding:0.25rem }
+.history-item {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  width: 140px; /* match thumbnail */
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+.history-item img {
+  width: 140px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 6px;
+  display: block;
+}
+.history-breed {
+  color: #fff;
+  margin: 0.25rem auto 0;
+  font-size: 0.85rem;
+  display: block;
+  text-align: center;
+  max-width: 140px; /* match thumbnail width */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.history-empty { color:#888; padding:0.5rem }
+
 /* Primary fetch button in main */
+/* Primary fetch button styling (kept generic, centered in .content-area) */
+.fetch-wrapper {
+  display:flex; justify-content:center; margin-bottom:0.5rem
+}
+.fetch-wrapper > button,
 main > button {
-  background: #1d4ed8; /* blue with good contrast */
+  background: #2563EB; /* accessible blue */
   color: #fff;
   border: none;
   padding: 0.6rem 1rem;
@@ -66,7 +106,8 @@ main > button {
   font-weight: 600;
   cursor: pointer;
 }
-main > button:hover:not(:disabled) { background: #1e40af; }
+.fetch-wrapper > button:hover:not(:disabled),
+main > button:hover:not(:disabled) { background: #1E40AF; }
 main > button:focus { outline: 3px solid #93c5fd; outline-offset: 2px; }
 main > button:disabled { opacity: 0.6; cursor: not-allowed; }
 
@@ -80,7 +121,8 @@ main > button:disabled { opacity: 0.6; cursor: not-allowed; }
 
 /* Ensure images inside result-card never overflow their container */
 .result-card img {
-  max-width: 100%;
+  width: 100%;
+  max-width: 400px; /* cap images on large screens */
   height: auto;
   display: block;
   margin: 0.5rem auto;
@@ -137,14 +179,23 @@ main > button:disabled { opacity: 0.6; cursor: not-allowed; }
   main {
     flex-direction: row;
     align-items: flex-start;
-    justify-content: space-between;
+    justify-content: center;
   }
-  .result-card { width: 65%; }
-  .ban-list { width: 30%; margin-top: 0; }
+  .history-column { display:block; width: 20vw; flex: 0 0 20vw }
+  .content-area { width: 60vw; max-width: 60vw; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding-right: 1rem }
+  .ban-list { width: 20vw; flex: 0 0 20vw; margin-left:2rem }
+  .result-card { width: 100%; }
 }
 
 @media (max-width: 899px) {
   /* On small screens ensure ban list is full width below content */
   main { flex-direction: column; }
   .ban-list { order: 2; }
+}
+
+/* Footer spacing */
+.app-container footer {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: none;
 }
