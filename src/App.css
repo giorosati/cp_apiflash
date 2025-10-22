@@ -74,6 +74,16 @@ main {
   margin: 0 0 0.5rem;
   text-align: center;
 }
+.history-header { display:flex; align-items:center; justify-content:space-between; gap:0.5rem; padding:0 0.25rem }
+.clear-history {
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.clear-history:hover { background: rgba(255,255,255,0.04) }
 .history-item {
   background: transparent;
   border: none;
