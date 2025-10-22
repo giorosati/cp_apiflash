@@ -103,6 +103,7 @@ function App() {
 
       <main>
         <aside className="history-column" aria-label="History">
+          <h2 className="history-heading">Previously Viewed</h2>
           <div className="history-list">
             {history.length === 0 && <div className="history-empty">No history</div>}
             {history.map((h, i) => (

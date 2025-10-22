@@ -68,6 +68,12 @@ main {
 /* History column */
 .history-column { display:none }
 .history-list { display:flex; flex-direction:column; gap:0.5rem; padding:0.25rem }
+.history-heading {
+  color: #fff;
+  font-size: 1rem;
+  margin: 0 0 0.5rem;
+  text-align: center;
+}
 .history-item {
   background: transparent;
   border: none;
@@ -206,6 +212,11 @@ main > button:disabled { opacity: 0.6; cursor: not-allowed; }
   /* On small screens ensure ban list is full width below content */
   main { flex-direction: column; }
   .ban-list { order: 2; }
+  /* show history at the bottom (below ban list) but above footer */
+  .history-column { display: block; width: 100%; order: 3; }
+  .history-list { flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 0.5rem }
+  .history-item { width: 120px; margin: 0.25rem; }
+  .history-item img { width: 120px; height: 80px }
 }
 
 /* Footer spacing */
