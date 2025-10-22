@@ -90,7 +90,8 @@ export async function fetchRandomDog({ banList = {}, maxAttempts = 8, timeout = 
 
   const apiKey = import.meta.env.VITE_APP_ACCESS_KEY || '';
   const headers = apiKey ? { 'x-api-key': apiKey } : {};
-  const url = `${THE_DOG_API_BASE}?limit=1&size=med&has_breeds=1&mime_types=jpg,png`;
+  // Request a small batch per call to increase chance of receiving a usable item
+  const url = `${THE_DOG_API_BASE}?limit=5&size=med&has_breeds=1&mime_types=jpg,png`;
 
   let attempt = 0;
   while (attempt < maxAttempts) {
@@ -101,21 +102,30 @@ export async function fetchRandomDog({ banList = {}, maxAttempts = 8, timeout = 
         throw new Error(`TheDogAPI error: ${res.status} ${res.statusText}`);
       }
       const data = await res.json();
-      const imgObj = Array.isArray(data) && data.length ? data[0] : null;
-      const normalized = normalizeImageObj(imgObj);
 
-      // If normalization failed (no breed), skip and retry
-      if (!normalized) continue;
-
-      // If item is banned, retry
-      if (isBanned(normalized, banList)) {
-        // short delay before retry to avoid hammering the API
-        await new Promise(r => setTimeout(r, 300));
+      if (!Array.isArray(data) || data.length === 0) {
+        // nothing returned — treat as a failed attempt
         continue;
       }
 
-      // Success
-      return normalized;
+      // Try each returned image in the batch and return the first usable one
+      for (const imgObj of data) {
+        const normalized = normalizeImageObj(imgObj);
+        // Debug note: normalized can be null when API returns images without breed info
+        if (!normalized) {
+          console.debug('fetchRandomDog: skipped image without breed', imgObj && imgObj.id);
+          continue;
+        }
+        if (isBanned(normalized, banList)) {
+          console.debug('fetchRandomDog: item is banned, skipping', normalized.id);
+          continue;
+        }
+        // Success
+        return normalized;
+      }
+
+      // If we reach here, none of the batch items were usable; short delay then retry
+      await new Promise(r => setTimeout(r, 300));
     } catch (err) {
       if (attempt >= maxAttempts) {
         throw err;
