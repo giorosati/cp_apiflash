@@ -68,6 +68,18 @@ main {
 /* History column */
 .history-column { display:none }
 .history-list { display:flex; flex-direction:column; gap:0.5rem; padding:0.25rem }
+
+/* Make history column scrollable on taller lists while keeping header visible */
+.history-column {
+  display: block;
+  max-height: calc(80vh - 4rem); /* leave room for header/footer and overall page padding */
+  display: flex;
+  flex-direction: column;
+}
+.history-list {
+  overflow-y: auto;
+  padding: 0.25rem;
+}
 .history-heading {
   color: #fff;
   font-size: 1rem;
