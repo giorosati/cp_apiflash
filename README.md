@@ -32,7 +32,7 @@ The following **required** functionality is completed:
 The following **optional** features are implemented:
 
 - [x] Multiple types of attributes are clickable and can be added to the ban list
-- [ ] Users can see a stored history of their previously displayed  results from this session
+- [x] Users can see a stored history of their previously displayed  results from this session
   - A dedicated section of the application displays all the previous images/attributes seen before
   - Each time the API call button is clicked, the history updates with the newest API result
 
@@ -59,7 +59,7 @@ Describe any challenges encountered while building the app.
 
 ## License
 
-    Copyright [yyyy] [name of copyright owner]
+    Copyright 2025 Giovanni Rosati
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
