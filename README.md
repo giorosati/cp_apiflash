@@ -1,4 +1,4 @@
-# Web Development Project 4 - *Name of App Here*
+# Web Development Project 4 - Man's Best Friend
 
 Submitted by: Giovanni Rosati
 
