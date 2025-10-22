@@ -6,9 +6,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-deploy:
+  deploy:
     runs-on: ubuntu-latest
-
     permissions:
       contents: read
       pages: write
@@ -23,7 +22,7 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Cache node modules
+      - name: Cache npm
         uses: actions/cache@v4
         with:
           path: ~/.npm
@@ -37,19 +36,13 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v3
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v1
         with:
           path: ./dist
 
-  deploy:
-    needs: build-deploy
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-      contents: read
-
-    steps:
       - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v1
