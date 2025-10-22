@@ -49,6 +49,15 @@
   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
 }
 
+header h1 { margin-bottom: 0; }
+
+/* Make header and fetch toolbar align to center column on wide screens */
+header, .fetch-wrapper {
+  width: 100%;
+  box-sizing: border-box;
+}
+header h1 { text-align: center; }
+
 main {
   display: flex;
   flex-direction: column;
@@ -94,7 +103,9 @@ main {
 /* Primary fetch button in main */
 /* Primary fetch button styling (kept generic, centered in .content-area) */
 .fetch-wrapper {
-  display:flex; justify-content:center; margin-bottom:0.5rem
+  display:flex;
+  justify-content:center;
+  margin: 1rem 0; /* equal space above and below the toolbar */
 }
 .fetch-wrapper > button,
 main > button {
@@ -182,6 +193,10 @@ main > button:disabled { opacity: 0.6; cursor: not-allowed; }
     justify-content: center;
   }
   .history-column { display:block; width: 20vw; flex: 0 0 20vw }
+  /* center header and fetch to align with center column */
+  header, .fetch-wrapper { width: 60vw; max-width: 60vw; margin: 0 auto; }
+  /* increase vertical spacing for the fetch toolbar on wide screens and keep it horizontally centered */
+  .fetch-wrapper { margin: 2.5rem auto; }
   .content-area { width: 60vw; max-width: 60vw; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding-right: 1rem }
   .ban-list { width: 20vw; flex: 0 0 20vw; margin-left:2rem }
   .result-card { width: 100%; }
