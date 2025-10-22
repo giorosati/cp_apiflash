@@ -197,14 +197,15 @@ main > button:disabled { opacity: 0.6; cursor: not-allowed; }
     flex-direction: row;
     align-items: flex-start;
     justify-content: center;
+    column-gap: 2rem; /* use gap to space columns without adding to widths */
   }
-  .history-column { display:block; width: 20vw; flex: 0 0 20vw }
+  .history-column { display:block; width: 20%; flex: 0 0 20%; box-sizing: border-box }
   /* center header and fetch to align with center column */
-  header, .fetch-wrapper { width: 60vw; max-width: 60vw; margin: 0 auto; }
+  header, .fetch-wrapper { width: 60%; max-width: 60%; margin: 0 auto; }
   /* increase vertical spacing for the fetch toolbar on wide screens and keep it horizontally centered */
   .fetch-wrapper { margin: 2.5rem auto; }
-  .content-area { width: 60vw; max-width: 60vw; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; padding-right: 1rem }
-  .ban-list { width: 20vw; flex: 0 0 20vw; margin-left:2rem }
+  .content-area { width: 60%; max-width: 60%; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; box-sizing: border-box }
+  .ban-list { width: 20%; flex: 0 0 20%; box-sizing: border-box }
   .result-card { width: 100%; }
 }
 
