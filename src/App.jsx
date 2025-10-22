@@ -64,12 +64,14 @@ function App() {
 
   function addBan(key, value) {
     if (!key || value == null) return
+    const trimmed = String(value).trim()
+    if (!trimmed) return
     setBanList(prev => {
       const arr = Array.isArray(prev[key]) ? prev[key] : []
       // avoid duplicates (case-insensitive)
-      const exists = arr.some(v => String(v).trim().toLowerCase() === String(value).trim().toLowerCase())
+      const exists = arr.some(v => String(v).trim().toLowerCase() === trimmed.toLowerCase())
       if (exists) return prev
-      return { ...prev, [key]: [...arr, value] }
+      return { ...prev, [key]: [...arr, trimmed] }
     })
   }
 
@@ -124,33 +126,48 @@ function App() {
               <ul>
                 <li>
                   <strong>Breed:</strong>{' '}
-                  <button className="attr-btn" onClick={() => addBan('breed', dog.attributes.breed)}>
-                    {dog.attributes.breed}
-                  </button>
+                  {dog.attributes.breed ? (
+                    <button className="attr-btn" onClick={() => addBan('breed', dog.attributes.breed)}>
+                      {dog.attributes.breed}
+                    </button>
+                  ) : (
+                    <span>—</span>
+                  )}
                 </li>
                 <li>
                   <strong>Temperament:</strong>{' '}
                   {dog.attributes.temperament ? (
-                    dog.attributes.temperament.split(',').map((t, i) => (
-                      <button key={i} className="attr-btn" onClick={() => addBan('temperament', t.trim())}>
-                        {t.trim()}
-                      </button>
-                    ))
+                    dog.attributes.temperament.split(',').map((t, i) => {
+                      const v = t.trim()
+                      return v ? (
+                        <button key={i} className="attr-btn" onClick={() => addBan('temperament', v)}>
+                          {v}
+                        </button>
+                      ) : null
+                    })
                   ) : (
                     <span>—</span>
                   )}
                 </li>
                 <li>
                   <strong>Life span:</strong>{' '}
-                  <button className="attr-btn" onClick={() => addBan('life_span', dog.attributes.life_span)}>
-                    {dog.attributes.life_span}
-                  </button>
+                  {dog.attributes.life_span ? (
+                    <button className="attr-btn" onClick={() => addBan('life_span', dog.attributes.life_span)}>
+                      {dog.attributes.life_span}
+                    </button>
+                  ) : (
+                    <span>—</span>
+                  )}
                 </li>
                 <li>
                   <strong>Weight:</strong>{' '}
-                  <button className="attr-btn" onClick={() => addBan('weight', dog.attributes.weight)}>
-                    {dog.attributes.weight}
-                  </button>
+                  {dog.attributes.weight ? (
+                    <button className="attr-btn" onClick={() => addBan('weight', dog.attributes.weight)}>
+                      {dog.attributes.weight}
+                    </button>
+                  ) : (
+                    <span>—</span>
+                  )}
                 </li>
               </ul>
             </div>
