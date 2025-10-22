@@ -27,24 +27,24 @@ function normalizeImageObj(imgObj) {
   const imageUrl = imgObj.url || null;
   const breedObj = Array.isArray(imgObj.breeds) && imgObj.breeds.length > 0 ? imgObj.breeds[0] : null;
 
-  if (!breedObj) return null; // require a breed for our normalized contract
-
+  // If there is no breed object, still return the image with empty attributes
+  // but mark whether the item had breed data so callers can prefer those.
   const attributes = {
-    breed: breedObj.name || '',
-    temperament: breedObj.temperament || '',
-    life_span: breedObj.life_span || '',
-    weight: (breedObj.weight && (breedObj.weight.imperial || breedObj.weight.metric)) || ''
+    breed: breedObj ? (breedObj.name || '') : '',
+    temperament: breedObj ? (breedObj.temperament || '') : '',
+    life_span: breedObj ? (breedObj.life_span || '') : '',
+    weight: breedObj ? ((breedObj.weight && (breedObj.weight.imperial || breedObj.weight.metric)) || '') : ''
   };
 
-  return { id, imageUrl, attributes };
+  return { id, imageUrl, attributes, hasBreed: !!breedObj };
 }
 
 // check if normalized item matches ban list
 // banList keys expected to be attribute names; temperament is tokenized by comma.
 function isBanned(item, banList = {}) {
-  if (!item || !item.attributes) return true; // treat malformed as banned/skip
+  if (!item) return true; // treat completely missing item as banned/skip
 
-  const attrs = item.attributes;
+  const attrs = item.attributes || {};
 
   // Helper: exact compare, case-insensitive
   const eq = (a, b) => {
@@ -108,20 +108,34 @@ export async function fetchRandomDog({ banList = {}, maxAttempts = 8, timeout = 
         continue;
       }
 
-      // Try each returned image in the batch and return the first usable one
+      // Try each returned image in the batch and prefer items that include breed data.
+      // If none with breed are usable, keep the first non-breed usable item as a fallback.
+      let fallback = null;
       for (const imgObj of data) {
         const normalized = normalizeImageObj(imgObj);
-        // Debug note: normalized can be null when API returns images without breed info
-        if (!normalized) {
-          console.debug('fetchRandomDog: skipped image without breed', imgObj && imgObj.id);
-          continue;
-        }
+        if (!normalized) continue; // defensive, should not occur with current normalizer
+
         if (isBanned(normalized, banList)) {
           console.debug('fetchRandomDog: item is banned, skipping', normalized.id);
           continue;
         }
-        // Success
-        return normalized;
+
+        if (normalized.hasBreed) {
+          // Prefer items that include breed metadata
+          console.debug('fetchRandomDog: accepted item with breed', normalized.id);
+          return normalized;
+        }
+
+        // Otherwise remember the first non-breed candidate (if any) as fallback
+        if (!fallback) {
+          fallback = normalized;
+        }
+      }
+
+      // If no item with breed was usable but we did find a non-breed item, accept it
+      if (fallback) {
+        console.debug('fetchRandomDog: accepting non-breed fallback', fallback.id);
+        return fallback;
       }
 
       // If we reach here, none of the batch items were usable; short delay then retry
