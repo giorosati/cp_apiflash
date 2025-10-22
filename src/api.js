@@ -5,6 +5,7 @@
 // See TASKS.md for data contract
 
 const THE_DOG_API_BASE = 'https://api.thedogapi.com/v1/images/search';
+const THE_DOG_IMAGE = 'https://api.thedogapi.com/v1/images';
 
 // helper: timeout fetch using AbortController
 async function fetchWithTimeout(url, options = {}, timeout = 8000) {
@@ -124,6 +125,23 @@ export async function fetchRandomDog({ banList = {}, maxAttempts = 8, timeout = 
           // Prefer items that include breed metadata
           console.debug('fetchRandomDog: accepted item with breed', normalized.id);
           return normalized;
+        }
+
+        // Try to enrich the image by fetching details by id (sometimes the search result lacks breeds)
+        try {
+          const detailUrl = `${THE_DOG_IMAGE}/${encodeURIComponent(normalized.id)}`;
+          const detailRes = await fetchWithTimeout(detailUrl, { headers }, timeout);
+          if (detailRes && detailRes.ok) {
+            const detailObj = await detailRes.json();
+            const enriched = normalizeImageObj(detailObj);
+            if (enriched && enriched.hasBreed && !isBanned(enriched, banList)) {
+              console.debug('fetchRandomDog: enriched image with breed from details', enriched.id);
+              return enriched;
+            }
+          }
+        } catch (e) {
+          // ignore enrichment errors and proceed to consider fallback
+          console.debug('fetchRandomDog: enrichment failed for', normalized.id, e && e.message);
         }
 
         // Otherwise remember the first non-breed candidate (if any) as fallback
